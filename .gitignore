@@ -56,3 +56,6 @@ desktop.ini
 
 # 기타
 HELP.md
+
+# 민감한 정보
+application.properties
