@@ -24,16 +24,32 @@ public class AuthController {
 
     @PostMapping("/login/google")
     public ResponseEntity<UserInfoResponse> loginGoogle(
-            @RequestBody Map<String, String> body,
+            @RequestBody(required = false) Map<String, String> body,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String bodyCode,
             HttpServletResponse response) {
 
-        String code = body.get("code");
-        if (code == null || code.isEmpty()) {
+        String authCode = null;
+        
+        // JSON body에서 code 추출 시도
+        if (body != null && body.get("code") != null) {
+            authCode = body.get("code");
+        }
+        // Query parameter에서 code 추출 시도
+        else if (code != null) {
+            authCode = code;
+        }
+        // bodyCode parameter에서 추출 시도
+        else if (bodyCode != null) {
+            authCode = bodyCode;
+        }
+        
+        if (authCode == null || authCode.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         // 1) code로 id_token 얻기
-        String idToken = googleOAuthService.exchangeCodeForIdToken(code);
+        String idToken = googleOAuthService.exchangeCodeForIdToken(authCode);
 
         // 2) id_token으로 사용자 로그인 처리, JWT 발급
         AuthService.LoginResult loginResult = authService.loginWithGoogle(idToken);
@@ -41,18 +57,18 @@ public class AuthController {
         // 3) JWT 쿠키 생성 및 응답 헤더에 추가
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", loginResult.accessToken())
                 .httpOnly(true)
-                .secure(true) // HTTPS 환경에서만 true
+                .secure(false) // 개발 환경에서는 false
                 .path("/")
                 .maxAge(7200)
-                .sameSite("Strict")
+                .sameSite("Lax") // 개발 환경에서는 Lax
                 .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", loginResult.refreshToken())
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(60 * 60 * 24)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
