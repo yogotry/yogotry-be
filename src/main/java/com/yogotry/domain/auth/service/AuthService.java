@@ -1,12 +1,12 @@
 package com.yogotry.domain.auth.service;
 
-import com.yogotry.domain.auth.dto.LoginRequest;
 import com.yogotry.domain.user.entity.User;
 import com.yogotry.domain.user.repository.UserRepository;
 import com.yogotry.domain.user.entity.Oauth;
 import com.yogotry.domain.user.repository.OauthRepository;
 import com.yogotry.global.auth.google.GoogleIdTokenValidator;
 import com.yogotry.global.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
