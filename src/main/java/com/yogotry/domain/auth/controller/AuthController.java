@@ -43,9 +43,9 @@ public class AuthController {
         else if (bodyCode != null) {
             authCode = bodyCode;
         }
-        
+
         if (authCode == null || authCode.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new IllegalArgumentException("Invalid Authorization Code");
         }
 
         // 1) code로 id_token 얻기

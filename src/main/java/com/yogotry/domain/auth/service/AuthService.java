@@ -5,6 +5,7 @@ import com.yogotry.domain.user.repository.UserRepository;
 import com.yogotry.domain.user.entity.Oauth;
 import com.yogotry.domain.user.repository.OauthRepository;
 import com.yogotry.global.auth.google.GoogleIdTokenValidator;
+import com.yogotry.global.exception.InvalidIdTokenException;
 import com.yogotry.global.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class AuthService {
     public LoginResult loginWithGoogle(String idToken) {
         var payload = googleIdTokenValidator.verify(idToken);
         if (payload == null) {
-            throw new IllegalArgumentException("Invalid ID token.");
+            throw new InvalidIdTokenException("Invalid ID token.");
         }
 
         String email = payload.getEmail();
