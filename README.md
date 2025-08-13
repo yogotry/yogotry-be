@@ -1,2 +1,2 @@
-# yogotry-be
-YogoTry BE 저장소입니다.
+# yogotry-be2
+YogoTry BE2 저장소입니다.
